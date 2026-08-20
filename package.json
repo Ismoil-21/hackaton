@@ -4,12 +4,19 @@
   "type": "module",
   "version": "1.0.0",
   "scripts": {
-    "setup": "cd backend && npm install && cd ../frontend && npm install",
-    "seed": "cd backend && npm run seed",
+    "setup": "npm install",
+    "seed": "npm --prefix backend run seed",
     "dev": "node scripts/dev.js",
-    "dev:api": "cd backend && npm run dev",
-    "dev:user": "cd frontend && npm run dev",
-    "dev:admin": "cd frontend && npm run dev:admin",
-    "build": "cd frontend && npm run build"
-  }
+    "dev:api": "npm --prefix backend run dev",
+    "dev:user": "npm --prefix user run dev",
+    "dev:admin": "npm --prefix admin run dev",
+    "build": "npm --prefix user run build && npm --prefix admin run build",
+    "start": "npm --prefix backend start"
+  },
+  "workspaces": [
+    "shared",
+    "backend",
+    "user",
+    "admin"
+  ]
 }

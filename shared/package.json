@@ -1,1 +1,13 @@
-{ "name": "shared", "type": "module", "private": true, "main": "domain.js" }
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "domain.js",
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.0",
+    "axios": "^1.7.2"
+  }
+}
