@@ -294,6 +294,13 @@ export const optionOf = (list, value) => list.find((i) => i.value === value);
 export const labelOf = (list, value) => optionOf(list, value)?.label ?? value;
 export const toneOf = (list, value) => TONES[optionOf(list, value)?.tone ?? 'gray'];
 
+/** Sidebar nuqtalari uchun to'q ranglar */
+export const DOT_TONES = {
+  gray: 'bg-slate-400', blue: 'bg-blue-500', green: 'bg-emerald-500',
+  amber: 'bg-amber-500', red: 'bg-red-500', purple: 'bg-purple-500',
+};
+export const dotOf = (list, value) => DOT_TONES[optionOf(list, value)?.tone ?? 'gray'];
+
 export const CATEGORY_VALUES = values(domain.categories);
 export const STATUS_VALUES = values(domain.statuses);
 export const PRIORITY_VALUES = values(domain.priorities);
