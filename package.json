@@ -1,0 +1,14 @@
+{
+  "name": "hackathon-starter",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "setup": "cd backend && npm install && cd ../frontend && npm install",
+    "seed": "cd backend && npm run seed",
+    "dev": "node scripts/dev.js",
+    "dev:api": "cd backend && npm run dev",
+    "dev:web": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build"
+  }
+}

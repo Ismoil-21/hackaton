@@ -1,0 +1,1 @@
+{ "name": "shared", "type": "module", "private": true, "main": "domain.js" }
