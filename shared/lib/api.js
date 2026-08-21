@@ -6,10 +6,23 @@ export const TOKEN_KEY = 'hs_token';
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 const appPath = () => location.pathname.slice(BASE.length) || '/';
 
+/**
+ * API manzili. VITE_API_URL ga `/api` qo'shishni unutish eng ko'p uchraydigan xato —
+ * shuning uchun o'zi to'g'rilaydi:
+ *   https://x.onrender.com      -> https://x.onrender.com/api
+ *   https://x.onrender.com/api/ -> https://x.onrender.com/api
+ *   (bo'sh)                     -> /api  (dev da vite proxy)
+ */
+function resolveBaseUrl(raw) {
+  const url = (raw || '').trim().replace(/\/+$/, '');
+  if (!url) return '/api';
+  return url.endsWith('/api') ? url : `${url}/api`;
+}
+
+export const API_BASE_URL = resolveBaseUrl(import.meta.env.VITE_API_URL);
+
 export const api = axios.create({
-  // prod da Vercel env: VITE_API_URL=https://<render-app>.onrender.com/api
-  // dev da bo'sh -> vite proxy ishlaydi
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: API_BASE_URL,
   // Render bepul tarifi uyquga ketadi, birinchi so'rov ~50s davom etishi mumkin
   timeout: 45000,
   headers: { 'Content-Type': 'application/json' },

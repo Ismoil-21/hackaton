@@ -206,7 +206,7 @@ Loyihada 3 ta mustaqil deploy bo'ladi:
 
 | Nima | Qayerda | Manzil |
 |---|---|---|
-| API | Render | `https://<render-app>.onrender.com` |
+| API | Render | `https://hackaton-c2dq.onrender.com` |
 | Foydalanuvchi paneli | Vercel | https://user-khaki-phi.vercel.app |
 | Admin paneli | Vercel | https://admin-woad-tau-34.vercel.app |
 
@@ -253,8 +253,11 @@ Har bir panel uchun **alohida Vercel loyihasi**, ikkalasi ham shu bitta repodan.
 **Environment Variables** (ikkalasida ham bir xil):
 
 ```
-VITE_API_URL = https://<render-app>.onrender.com/api
+VITE_API_URL = https://hackaton-c2dq.onrender.com/api
 ```
+
+> `/api` qo'shishni unutsangiz ham ishlaydi — kod uni o'zi qo'shadi.
+> Lekin domenni to'g'ri yozing va env qo'shgach **Redeploy** qiling.
 
 > ⚠️ Root Directory ni `user` yoki `admin` qilib qo'ymang — u holda `shared/` papkasi
 > build ga tushmaydi va `Rollup failed to resolve import` xatosi chiqadi.
@@ -270,7 +273,7 @@ VITE_API_URL = https://<render-app>.onrender.com/api
 ### 6.3 Deploydan keyin tekshirish
 
 ```bash
-curl https://<render-app>.onrender.com/api/health
+curl https://hackaton-c2dq.onrender.com/api/health
 # {"success":true,"status":"ok",...}
 ```
 
@@ -279,7 +282,8 @@ Keyin panelni oching → login. Xatolik chiqsa:
 | Belgi | Sabab |
 |---|---|
 | `Serverga ulanib bo'lmadi...` | `VITE_API_URL` noto'g'ri yoki redeploy qilinmagan |
-| Konsolda `CORS policy` | Render dagi `CLIENT_URL` ga o'sha domen qo'shilmagan |
+| Konsolda `CORS policy: No 'Access-Control-Allow-Origin'` | Render dagi `CLIENT_URL` ga o'sha domen qo'shilmagan. Render **Logs** da `✗ CORS rad etildi: <origin>` qatorini ko'rasiz — ruxsat etilganlar ro'yxati ham o'sha yerda |
+| `404` + URL da `/api` yo'q | `VITE_API_URL` noto'g'ri (eski build). Redeploy qiling |
 | Sahifa yangilanganda 404 | `vercel.json` repo ildizida yo'q yoki Root Directory noto'g'ri |
 | `Rollup failed to resolve import` | Vercel Root Directory `./` emas |
 | Render: `Missing script: "build"` | eski kod — `backend/package.json` dagi bo'sh `build` skripti push qilinmagan |

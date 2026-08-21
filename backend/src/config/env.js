@@ -12,7 +12,12 @@ export const env = {
   mongoUri: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/hackathon_starter',
   jwtSecret: process.env.JWT_SECRET || 'dev_secret_change_me',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
-  clientUrl: process.env.CLIENT_URL || 'http://localhost:5173,http://localhost:5174',
+  // Prod da sozlanmasa bo'sh qoladi -> CORS hamma origin ga ruxsat beradi (ogohlantirish bilan)
+  clientUrl:
+    process.env.CLIENT_URL?.trim() ||
+    (process.env.NODE_ENV === 'production'
+      ? ''
+      : 'http://localhost:5173,http://localhost:5174,http://localhost:4173,http://localhost:4174'),
   isProd: process.env.NODE_ENV === 'production',
 };
 
