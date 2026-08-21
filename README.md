@@ -217,9 +217,12 @@ Loyihada 3 ta mustaqil deploy bo'ladi:
 | Maydon | Qiymat |
 |---|---|
 | Root Directory | `backend` |
-| Build Command | `npm install` |
+| Build Command | `npm install` (yoki `npm install; npm run build` — ikkalasi ham ishlaydi) |
 | Start Command | `npm start` |
 | Health Check Path | `/api/health` |
+
+> Backend da bo'sh `build` skripti bor — Render/Railway ning standart
+> `npm run build` buyrug'i "Missing script: build" bilan yiqilmasligi uchun.
 
 **Environment Variables:**
 
@@ -259,8 +262,10 @@ VITE_API_URL = https://<render-app>.onrender.com/api
 > ⚠️ `VITE_API_URL` **build vaqtida** kodga yoziladi. Env ni qo'shgandan keyin
 > albatta **Redeploy** qiling, aks holda eski qiymat qoladi.
 >
-> Repo ildizidagi `vercel.json` SPA rewrite ni beradi — `/login`, `/users`,
-> `/requests/123` kabi manzillar to'g'ridan-to'g'ri ochilganda 404 bo'lmaydi.
+> **SPA rewrite:** `vercel.json` uchta joyda bor — repo ildizida, `user/` va `admin/` ichida.
+> Vercel Root Directory qaysi bo'lishidan qat'i nazar `/login`, `/users`,
+> `/requests/123` kabi manzillarni yangilaganda 404 chiqmaydi.
+> Bu fayl repoda bo'lishi shart — commit qilishni unutmang.
 
 ### 6.3 Deploydan keyin tekshirish
 
@@ -277,6 +282,7 @@ Keyin panelni oching → login. Xatolik chiqsa:
 | Konsolda `CORS policy` | Render dagi `CLIENT_URL` ga o'sha domen qo'shilmagan |
 | Sahifa yangilanganda 404 | `vercel.json` repo ildizida yo'q yoki Root Directory noto'g'ri |
 | `Rollup failed to resolve import` | Vercel Root Directory `./` emas |
+| Render: `Missing script: "build"` | eski kod — `backend/package.json` dagi bo'sh `build` skripti push qilinmagan |
 | Birinchi so'rov ~50s | Render bepul tarifi uyqudan uyg'onmoqda (normal) |
 
 Demo hisoblarni yaratish uchun bir marta lokalda `MONGO_URI` ni Atlas ga qaratib
