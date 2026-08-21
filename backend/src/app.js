@@ -7,12 +7,13 @@ import { fileURLToPath } from 'node:url';
 import routes from './routes/index.js';
 import { notFound, errorHandler } from './middleware/error.js';
 import { env } from './config/env.js';
+import { corsOptions, allowedOrigins } from './config/cors.js';
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
 export const app = express();
 
-app.use(cors({ origin: env.clientUrl.split(',').map((s) => s.trim()), credentials: true }));
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '1mb' }));
 if (!env.isProd) app.use(morgan('dev'));
 
@@ -40,6 +41,7 @@ const served = [
   serveSpa('/', path.join(projectRoot, 'user/dist')) && 'user -> /',
 ].filter(Boolean);
 if (served.length) console.log(`✓ Static: ${served.join(', ')}`);
+console.log(`✓ CORS: ${allowedOrigins.join(', ') || '(sozlanmagan)'}`);
 
 app.use(notFound);
 app.use(errorHandler);

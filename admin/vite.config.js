@@ -6,15 +6,22 @@ import { fileURLToPath } from 'node:url';
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const shared = path.resolve(dir, '../shared');
 
-export default defineConfig(({ command }) => ({
-  // build da /admin/ ostida turadi (backend static qilib bersa ham ishlaydi)
-  base: command === 'build' ? '/admin/' : '/',
+export default defineConfig({
+  /**
+   * Odatda '/' — Vercel/Netlify da o'z domenida turadi.
+   * Backend bitta portdan tarqatsa (npm run build:server) BUILD_BASE beriladi.
+   */
+  base: process.env.BUILD_BASE || '/',
   plugins: [react()],
-  resolve: { alias: { '@shared': shared } },
+  resolve: {
+    alias: { '@shared': shared },
+    // shared/ app root idan tashqarida — react nusxasi bitta bo'lishi uchun
+    dedupe: ['react', 'react-dom', 'react-router-dom'],
+  },
   server: {
     port: 5174,
     strictPort: true,
     proxy: { '/api': { target: 'http://localhost:5001', changeOrigin: true } },
     fs: { allow: [dir, shared] },
   },
-}));
+});

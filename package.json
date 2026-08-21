@@ -10,7 +10,10 @@
     "dev:api": "npm --prefix backend run dev",
     "dev:user": "npm --prefix user run dev",
     "dev:admin": "npm --prefix admin run dev",
-    "build": "npm --prefix user run build && npm --prefix admin run build",
+    "build": "npm run build:user && npm run build:admin",
+    "build:user": "npm --prefix user run build",
+    "build:admin": "npm --prefix admin run build",
+    "build:server": "npm run build:user && BUILD_BASE=/admin/ npm --prefix admin run build",
     "start": "npm --prefix backend start"
   },
   "workspaces": [

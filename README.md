@@ -200,39 +200,104 @@ frontend `shared/components/StatsCards.jsx`.
 
 ---
 
-## 6. Production / serverga yuklash
+## 6. Deploy — Vercel (2 ta panel) + Render (API)
 
-### Variant A — bitta server (eng oddiy, tavsiya etiladi)
+Loyihada 3 ta mustaqil deploy bo'ladi:
+
+| Nima | Qayerda | Manzil |
+|---|---|---|
+| API | Render | `https://<render-app>.onrender.com` |
+| Foydalanuvchi paneli | Vercel | https://user-khaki-phi.vercel.app |
+| Admin paneli | Vercel | https://admin-woad-tau-34.vercel.app |
+
+### 6.1 Render — backend
+
+**Settings:**
+
+| Maydon | Qiymat |
+|---|---|
+| Root Directory | `backend` |
+| Build Command | `npm install` |
+| Start Command | `npm start` |
+| Health Check Path | `/api/health` |
+
+**Environment Variables:**
+
+```
+NODE_ENV      = production
+MONGO_URI     = mongodb+srv://...   (MongoDB Atlas)
+JWT_SECRET    = <uzun tasodifiy satr>
+CLIENT_URL    = https://user-khaki-phi.vercel.app,https://admin-woad-tau-34.vercel.app,https://*.vercel.app
+```
+
+> `PORT` ni **qo'lda qo'ymang** — Render o'zi beradi, kod uni o'qiydi.
+> `https://*.vercel.app` — preview deploy lar uchun; xohlasangiz olib tashlang.
+
+MongoDB Atlas → Network Access → `0.0.0.0/0` ga ruxsat bering (Render IP lari o'zgaruvchan).
+
+### 6.2 Vercel — ikkala panel uchun ham
+
+Har bir panel uchun **alohida Vercel loyihasi**, ikkalasi ham shu bitta repodan.
+
+| Maydon | user loyihasi | admin loyihasi |
+|---|---|---|
+| Root Directory | **`./`** (repo ildizi, o'zgartirmang) | **`./`** |
+| Framework Preset | Vite | Vite |
+| Build Command | `npm run build:user` | `npm run build:admin` |
+| Output Directory | `user/dist` | `admin/dist` |
+| Install Command | `npm install` | `npm install` |
+
+**Environment Variables** (ikkalasida ham bir xil):
+
+```
+VITE_API_URL = https://<render-app>.onrender.com/api
+```
+
+> ⚠️ Root Directory ni `user` yoki `admin` qilib qo'ymang — u holda `shared/` papkasi
+> build ga tushmaydi va `Rollup failed to resolve import` xatosi chiqadi.
+>
+> ⚠️ `VITE_API_URL` **build vaqtida** kodga yoziladi. Env ni qo'shgandan keyin
+> albatta **Redeploy** qiling, aks holda eski qiymat qoladi.
+>
+> Repo ildizidagi `vercel.json` SPA rewrite ni beradi — `/login`, `/users`,
+> `/requests/123` kabi manzillar to'g'ridan-to'g'ri ochilganda 404 bo'lmaydi.
+
+### 6.3 Deploydan keyin tekshirish
+
+```bash
+curl https://<render-app>.onrender.com/api/health
+# {"success":true,"status":"ok",...}
+```
+
+Keyin panelni oching → login. Xatolik chiqsa:
+
+| Belgi | Sabab |
+|---|---|
+| `Serverga ulanib bo'lmadi...` | `VITE_API_URL` noto'g'ri yoki redeploy qilinmagan |
+| Konsolda `CORS policy` | Render dagi `CLIENT_URL` ga o'sha domen qo'shilmagan |
+| Sahifa yangilanganda 404 | `vercel.json` repo ildizida yo'q yoki Root Directory noto'g'ri |
+| `Rollup failed to resolve import` | Vercel Root Directory `./` emas |
+| Birinchi so'rov ~50s | Render bepul tarifi uyqudan uyg'onmoqda (normal) |
+
+Demo hisoblarni yaratish uchun bir marta lokalda `MONGO_URI` ni Atlas ga qaratib
+`npm run seed` ishga tushiring — yoki panelda ro'yxatdan o'ting
+(**birinchi foydalanuvchi avtomatik admin bo'ladi**).
+
+### 6.4 Muqobil — hammasi bitta serverda
+
+Vercel ishlatmasdan, faqat bitta VPS/Render service da:
 
 ```bash
 npm install
-npm run build      # -> user/dist  va  admin/dist
-npm start          # backend :5001 hammasini tarqatadi
+npm run build:server     # admin ni /admin ostiga moslab build qiladi
+npm start
 ```
-
-Backend build larni o'zi topib static qilib beradi:
 
 | URL | Nima |
 |---|---|
-| `http://server:5001/` | foydalanuvchi paneli |
-| `http://server:5001/admin` | admin paneli |
-| `http://server:5001/api/...` | API |
+| `/` | foydalanuvchi paneli |
+| `/admin` | admin paneli |
+| `/api/...` | API |
 
-Deep link lar (`/requests/123`, `/admin/users`) ham ishlaydi — SPA fallback qo'yilgan.
-`.env` da faqat `MONGO_URI` va `JWT_SECRET` ni to'g'rilang. CORS kerak emas — bitta origin.
-
-> Diqqat: bitta origin da user va admin **bitta sessiyani** baham ko'radi
-> (localStorage origin ga bog'liq). Alohida sessiya kerak bo'lsa Variant B.
-
-### Variant B — alohida hosting
-
-`user/dist` va `admin/dist` ni alohida domen/portga qo'ying:
-
-```bash
-# user/.env va admin/.env
-VITE_API_URL=https://api.domeningiz.uz/api
-# backend/.env
-CLIENT_URL=https://app.domeningiz.uz,https://admin.domeningiz.uz
-```
-
-`admin/vite.config.js` dagi `base` ni `'/'` ga o'zgartiring (alohida domen bo'lsa).
+Bu holda CORS umuman kerak emas (bitta origin), lekin user va admin
+**bitta sessiyani** baham ko'radi.
